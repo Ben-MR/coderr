@@ -1,9 +1,8 @@
 from rest_framework import serializers
-from user_auth_app.models import UserProfile
-from django.contrib.auth.models import User
+from user_auth_app.models import CustomUser
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     """
     Serializer for user profile data.
 
@@ -12,8 +11,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        model = UserProfile
-        fields = ["user", "bio", "location"]
+        model = CustomUser
+        fields = ["username", "email", "password", "type"]
 
 
 class RegistrationsSerializer(serializers.ModelSerializer):
@@ -27,11 +26,12 @@ class RegistrationsSerializer(serializers.ModelSerializer):
     """
 
     repeated_password = serializers.CharField(write_only=True)
-    fullname = serializers.CharField(write_only=True)
+    username = serializers.CharField(write_only=True)
+    type = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ["fullname", "email", "password", "repeated_password"]
+        model = CustomUser
+        fields = ["username", "email", "password", "repeated_password", "type"]
         extra_kwargs = {
             "password": {
                 "write_only": True
@@ -57,11 +57,11 @@ class RegistrationsSerializer(serializers.ModelSerializer):
                 {"error": "Passwords do not match"}
             )
 
-        account = User(
+        account = CustomUser(
             email=self.validated_data["email"],
             username=self.validated_data["email"],
         )
-        account.first_name = self.validated_data["fullname"]
+        account.first_name = self.validated_data["username"]
         account.set_password(pw)
         account.save()
 
@@ -80,44 +80,44 @@ class RegistrationsSerializer(serializers.ModelSerializer):
         Returns:
             str: The validated email value.
         """
-        if User.objects.filter(email=value).exists():
+        if CustomUser.objects.filter(email=value).exists():
             raise serializers.ValidationError(
                 "Email already exists"
             )
         return value
 
 
-class EmailCheckSerializer(serializers.Serializer):
-    """
-    Serializer used to check whether an email address
-    is already registered.
+# class EmailCheckSerializer(serializers.Serializer):
+#     """
+#     Serializer used to check whether an email address
+#     is already registered.
 
-    Returns basic user information if the email exists.
-    """
+#     Returns basic user information if the email exists.
+#     """
 
-    email = serializers.EmailField()
-    exists = serializers.BooleanField(read_only=True)
-    id = serializers.IntegerField(read_only=True)
-    first_name = serializers.CharField(read_only=True)
+#     email = serializers.EmailField()
+#     exists = serializers.BooleanField(read_only=True)
+#     id = serializers.IntegerField(read_only=True)
+#     first_name = serializers.CharField(read_only=True)
 
-    def to_representation(self, data):
-        """
-        Return information about the user associated with the given email.
+#     def to_representation(self, data):
+#         """
+#         Return information about the user associated with the given email.
 
-        If a user exists:
-        - return id, email, and fullname
+#         If a user exists:
+#         - return id, email, and username
 
-        If no user exists:
-        - return exists = False
-        """
-        email = data["email"]
-        user = User.objects.filter(email__iexact=email).first()
+#         If no user exists:
+#         - return exists = False
+#         """
+#         email = data["email"]
+#         user = User.objects.filter(email__iexact=email).first()
 
-        if user:
-            return {
-                "id": user.id,
-                "email": user.email,
-                "fullname": user.first_name,
-            }
+#         if user:
+#             return {
+#                 "id": user.id,
+#                 "email": user.email,
+#                 "fullname": user.first_name,
+#             }
 
-        return {"exists": False}
+#         return {"exists": False}

@@ -1,7 +1,7 @@
 from rest_framework.authtoken.models import Token as AuthToken
 from rest_framework import generics
-from user_auth_app.models import UserProfile
-from .serializers import UserProfileSerializer, EmailCheckSerializer
+from user_auth_app.models import CustomUser
+from .serializers import CustomUserSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import RegistrationsSerializer
@@ -10,7 +10,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
 
-class UserProfileList(generics.ListCreateAPIView):
+class CustomUserList(generics.ListCreateAPIView):
     """
     List and create user profiles.
 
@@ -24,11 +24,11 @@ class UserProfileList(generics.ListCreateAPIView):
       get_queryset() and/or perform_create().
     """
 
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
 
 
-class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+class CustomUserDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update, or delete a single user profile.
 
@@ -41,8 +41,8 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
       permission_classes added here.
     """
 
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
 
 
 class RegistrationsView(APIView):
@@ -53,7 +53,7 @@ class RegistrationsView(APIView):
     a DRF auth token plus basic user information.
 
     Expected request fields (based on RegistrationsSerializer):
-    - fullname
+    - username
     - email
     - password
     - repeated_password
@@ -68,7 +68,7 @@ class RegistrationsView(APIView):
         On success:
         - Creates the user (password is hashed in the serializer)
         - Creates or fetches a DRF Token
-        - Returns: token, fullname, email, user_id
+        - Returns: token, username, email, user_id
 
         On validation error:
         - Returns serializer errors
@@ -85,7 +85,7 @@ class RegistrationsView(APIView):
         return Response(
             {
                 "token": token.key,
-                "fullname": saved_account.first_name,
+                "username": saved_account.first_name,
                 "email": saved_account.email,
                 "user_id": saved_account.id,
             },
@@ -144,7 +144,7 @@ class CustomLogin(ObtainAuthToken):
         return Response(
             {
                 "token": token.key,
-                "fullname": user.first_name,
+                "username": user.first_name,
                 "email": user.email,
                 "user_id": user.id,
             },
@@ -175,30 +175,30 @@ class LogoutView(APIView):
         return Response({"message": "Logged out successfully"}, status=200)
 
 
-class EmailCheckView(APIView):
-    """
-    Endpoint to check whether a given email address exists.
+# class EmailCheckView(APIView):
+#     """
+#     Endpoint to check whether a given email address exists.
 
-    - GET /...?email=someone@example.com
-    - Returns user details (id/email/fullname) if present, otherwise exists=False.
-    """
+#     - GET /...?email=someone@example.com
+#     - Returns user details (id/email/username) if present, otherwise exists=False.
+#     """
 
-    serializer_class = EmailCheckSerializer
+#     serializer_class = EmailCheckSerializer
 
-    def get(self, request):
-        """
-        Validate the email query parameter and return existence info.
+#     def get(self, request):
+#         """
+#         Validate the email query parameter and return existence info.
 
-        Query params:
-            email (str): Email address to check.
+#         Query params:
+#             email (str): Email address to check.
 
-        Returns:
-            Response: Serialized existence information.
-        """
-        email = request.query_params.get("email", "")
+#         Returns:
+#             Response: Serialized existence information.
+#         """
+#         email = request.query_params.get("email", "")
 
-        serializer = self.serializer_class(data={"email": email})
+#         serializer = self.serializer_class(data={"email": email})
         
-        if serializer.is_valid(raise_exception=True):
-            return Response(serializer.to_representation(serializer.validated_data))
-        return Response(serializer.errors, status=404)
+#         if serializer.is_valid(raise_exception=True):
+#             return Response(serializer.to_representation(serializer.validated_data))
+#         return Response(serializer.errors, status=404)

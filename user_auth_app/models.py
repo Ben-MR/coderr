@@ -1,29 +1,18 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class UserProfile(models.Model):
-    """
-    Extension model for the built-in Django User model.
-
-    This model stores additional profile-related information that does not
-    belong directly on the User model itself.
-    """
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
+class CustomUser(AbstractUser):
+    class Usertype(models.TextChoices):
+        CUSTOMER = "customer", "customer"
+        BUSINESS_USER = "business-user", "business-user"
+    
+    type = models.CharField(
+        max_length=20,
+        choices=Usertype.choices,
+        default=Usertype.CUSTOMER,
     )
 
-    bio = models.TextField(
-        blank=True,
-        null=True,
-    )
-
-    location = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
-    )
 
     def __str__(self):
         """
