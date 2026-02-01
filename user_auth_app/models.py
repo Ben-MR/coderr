@@ -14,12 +14,4 @@ class CustomUser(AbstractUser):
     )
 
 
-    def __str__(self):
-        """
-        Return a human-readable representation of the profile.
-
-        Uses the related user's username for display purposes
-        (e.g. in Django Admin or debug output).
-        """
-        return self.user.username
 

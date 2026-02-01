@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from profile_app.models import UserProfile
 from user_auth_app.models import CustomUser
 
 
@@ -59,11 +60,12 @@ class RegistrationsSerializer(serializers.ModelSerializer):
 
         account = CustomUser(
             email=self.validated_data["email"],
-            username=self.validated_data["email"],
+            username=self.validated_data["username"],
         )
-        account.first_name = self.validated_data["username"]
+        
         account.set_password(pw)
         account.save()
+        UserProfile.objects.create(user=account)
 
         return account
 

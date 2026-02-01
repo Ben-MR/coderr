@@ -11,18 +11,6 @@ from rest_framework.authtoken.models import Token
 
 
 class CustomUserList(generics.ListCreateAPIView):
-    """
-    List and create user profiles.
-
-    - GET: Returns a list of all UserProfile objects.
-    - POST: Creates a new UserProfile.
-
-    Notes:
-    - Access control depends on your global DRF settings or additional
-      permission_classes added here.
-    - If you want to restrict profiles to the current user only, override
-      get_queryset() and/or perform_create().
-    """
 
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -85,7 +73,7 @@ class RegistrationsView(APIView):
         return Response(
             {
                 "token": token.key,
-                "username": saved_account.first_name,
+                "username": saved_account.username,
                 "email": saved_account.email,
                 "user_id": saved_account.id,
             },
@@ -94,45 +82,16 @@ class RegistrationsView(APIView):
 
 
 class CustomLogin(ObtainAuthToken):
-    """
-    Login endpoint returning a DRF token.
-
-    The DRF ObtainAuthToken serializer expects:
-    - username
-    - password
-
-    This project uses email-based login on the frontend, so the view maps
-    incoming 'email' to 'username' (the project stores username=email).
-    """
 
     permission_classes = [AllowAny]
     authentication_classes = []
 
     def post(self, request, *args, **kwargs):
-        """
-        Authenticate a user and return a DRF Token.
-
-        Frontend sends:
-        - email
-        - password
-
-        DRF expects:
-        - username
-        - password
-
-        Therefore:
-        - if "email" is provided, it is mapped to "username" before validation.
-
-        Returns:
-            Response:
-            - 200: token + basic user data
-            - 400: validation/authentication errors
-        """
         data = request.data.copy()
 
         # Frontend sends email -> DRF ObtainAuthToken expects username
-        if "username" not in data and "email" in data:
-            data["username"] = data["email"]
+        # if "username" not in data and "email" in data:
+        #     data["username"] = data["email"]
 
         serializer = self.serializer_class(data=data, context={"request": request})
         if not serializer.is_valid():
@@ -144,7 +103,7 @@ class CustomLogin(ObtainAuthToken):
         return Response(
             {
                 "token": token.key,
-                "username": user.first_name,
+                "username": user.username,
                 "email": user.email,
                 "user_id": user.id,
             },
