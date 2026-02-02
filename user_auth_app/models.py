@@ -5,7 +5,7 @@ from django.db import models
 class CustomUser(AbstractUser):
     class Usertype(models.TextChoices):
         CUSTOMER = "customer", "customer"
-        BUSINESS_USER = "business-user", "business-user"
+        BUSINESS = "business", "business"
     
     type = models.CharField(
         max_length=20,

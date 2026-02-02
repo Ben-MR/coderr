@@ -4,12 +4,7 @@ from user_auth_app.models import CustomUser
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for user profile data.
 
-    Used to create and update additional profile information
-    associated with a Django User.
-    """
 
     class Meta:
         model = CustomUser
@@ -17,14 +12,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class RegistrationsSerializer(serializers.ModelSerializer):
-    """
-    Serializer used for user registration.
-
-    Handles:
-    - email-based registration
-    - password confirmation
-    - creation of a Django User instance
-    """
 
     repeated_password = serializers.CharField(write_only=True)
     username = serializers.CharField(write_only=True)
@@ -40,16 +27,7 @@ class RegistrationsSerializer(serializers.ModelSerializer):
         }
 
     def save(self):
-        """
-        Create a new user after validating the passwords.
 
-        Validation rules:
-        - password and repeated_password must match
-        - email must be unique
-
-        Returns:
-            User: The newly created user instance.
-        """
         pw = self.validated_data["password"]
         repeated_pw = self.validated_data["repeated_password"]
 
@@ -61,6 +39,7 @@ class RegistrationsSerializer(serializers.ModelSerializer):
         account = CustomUser(
             email=self.validated_data["email"],
             username=self.validated_data["username"],
+            type=self.validated_data["type"],
         )
         
         account.set_password(pw)

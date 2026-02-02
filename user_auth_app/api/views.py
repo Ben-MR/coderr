@@ -8,6 +8,7 @@ from .serializers import RegistrationsSerializer
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from rest_framework import status
 
 
 class CustomUserList(generics.ListCreateAPIView):
@@ -112,26 +113,13 @@ class CustomLogin(ObtainAuthToken):
 
 
 class LogoutView(APIView):
-    """
-    Logout endpoint.
-
-    For DRF TokenAuthentication, "logout" typically means:
-    - the client deletes/forgets the stored token
-
-    This endpoint does not revoke/delete the token server-side, because
-    the frontend is standardized and must remain compatible.
-    """
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        """
-        Confirm logout.
-
-        Returns:
-            Response: 200 with a confirmation message.
-        """
-        return Response({"message": "Logged out successfully"}, status=200)
+        # request.auth is the Token instance under TokenAuthentication
+        if request.auth is not None:
+            request.auth.delete()
+        return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
 
 
 # class EmailCheckView(APIView):
