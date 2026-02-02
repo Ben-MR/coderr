@@ -11,17 +11,14 @@ class UserProfilePermissionsTests(APITestCase):
         return {status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN}
 
     def setUp(self):
-        # User A (Customer) + Automatisches Profil abgreifen oder erstellen
         self.user_a = CustomUser.objects.create_user(
             username="user_a",
             email="a@example.com",
             password="sicheresPassword123a",
             type="customer"
         )
-        # Falls dein Signal das Profil nicht erstellt, hier manuell:
         self.profile_a, _ = UserProfile.objects.get_or_create(user=self.user_a)
         
-        # User B (Business)
         self.user_b = CustomUser.objects.create_user(
             username="user_b",
             email="b@example.com",
@@ -30,12 +27,10 @@ class UserProfilePermissionsTests(APITestCase):
         )
         self.profile_b, _ = UserProfile.objects.get_or_create(user=self.user_b)
         
-        # Profile B initial befüllen (entspricht deinem Update-Workflow)
         self.profile_b.location = "Hamburg"
         self.profile_b.tel = "222"
         self.profile_b.save()
 
-        # URLs
         self.list_url = reverse("profile-list")
         self.detail_url_a = reverse("profile-detail", kwargs={"pk": self.profile_a.pk})
         self.detail_url_b = reverse("profile-detail", kwargs={"pk": self.profile_b.pk})
@@ -88,7 +83,6 @@ class UserProfilePermissionsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
-        # Zugriff über "user" statt "id", da das deine Vorgabe ist
         profile = response.data[0]
         self.assertEqual(profile["user"], self.user_a.id)
 
@@ -100,6 +94,5 @@ class UserProfilePermissionsTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
-        # Auch hier: Zugriff über "user"
         profile = response.data[0]
         self.assertEqual(profile["user"], self.user_b.id)
