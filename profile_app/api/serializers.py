@@ -20,7 +20,7 @@ class UserProfileListBusinessTypSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source="user.type", read_only=True)
     file = serializers.ImageField(source="ImageField", read_only=True)
     class Meta:
-        model = UserProfile
+        model = UserProfile 
         fields = ["user", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type"]
 
 class UserProfileDetailSerializer(serializers.ModelSerializer):
