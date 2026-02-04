@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from offers_app.models import Offer, OfferDetail
+from django.db.models import Max, Min
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
@@ -9,28 +10,28 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "revisions", "delivery_time_in_days", "price", "features", "offer_type"]
 
 class OfferSerializer(serializers.ModelSerializer):
-
+    
     details = OfferDetailSerializer(many=True)
 
     class Meta:
         model = Offer
         fields = [
-            "id",
             "title",
             "image",
             "description",
-            "min_price",
-            "min_delivery_time",
             "details",
         ]
-        read_only_fields = ["min_price", "min_delivery_time"]
 
     def create(self, validated_data):
-        details_list = validated_data.pop('details')
-        offer = Offer.objects.create(**validated_data)
+        user = self.context['request'].user
+        
+        details_list = validated_data.pop('details')    
+ 
+        offer = Offer.objects.create(user=user, **validated_data)
 
         for item in details_list:
-            OfferDetail.objects.create(offer = offer, **item)
+            OfferDetail.objects.create(offer=offer, **item)
+            
         return offer
 
 
@@ -45,6 +46,8 @@ class OfferDetailLinkSerializer(serializers.ModelSerializer):
 
 class OfferReadSerializer(serializers.ModelSerializer):
     details = OfferDetailLinkSerializer(many=True, read_only=True)
+    min_price = serializers.SerializerMethodField()
+    min_delivery_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Offer
@@ -58,3 +61,31 @@ class OfferReadSerializer(serializers.ModelSerializer):
             "details",
         ]
         read_only_fields = ["min_price", "min_delivery_time"]
+
+    def get_min_price(self, obj):
+        result = obj.details.aggregate(Min("price"))
+        return result["price__min"] or 0
+    
+    def get_min_delivery_time(self, obj):
+        result = obj.details.aggregate(Min("delivery_time_in_days"))
+        return result["delivery_time_in_days__min"] or 0
+    
+class OfferSingleReadSerializer(serializers.ModelSerializer):
+    details = OfferDetailLinkSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Offer
+        fields = ["id", "user", "title", "image", "description", "created_at",  "updated_at", "details"]
+
+    def update(self, instance, validated_data):
+        offer_data = validated_data.pop('offer', {})
+        offer = instance.offer
+        
+        instance.title = validated_data.get('title', instance.title)
+        instance.tel = validated_data.get('tel', instance.tel)
+        instance.description = validated_data.get('description', instance.description)
+        instance.working_hours = validated_data.get('working_hours', instance.working_hours)
+
+        instance.save()
+
+        return instance

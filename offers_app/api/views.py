@@ -1,5 +1,5 @@
 from rest_framework import viewsets, status
-from offers_app.api.serializer import OfferDetailSerializer, OfferSerializer, OfferReadSerializer
+from offers_app.api.serializer import OfferDetailSerializer, OfferSerializer, OfferReadSerializer, OfferSingleReadSerializer
 from offers_app.models import Offer, OfferDetail
 
 
@@ -11,6 +11,8 @@ class OffersViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return OfferSerializer
+        if self.action == "retrieve":
+            return OfferSingleReadSerializer
         
         return OfferReadSerializer
 
