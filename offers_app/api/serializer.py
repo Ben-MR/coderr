@@ -77,15 +77,19 @@ class OfferSingleReadSerializer(serializers.ModelSerializer):
         model = Offer
         fields = ["id", "user", "title", "image", "description", "created_at",  "updated_at", "details"]
 
-    def update(self, instance, validated_data):
-        offer_data = validated_data.pop('offer', {})
-        offer = instance.offer
-        
-        instance.title = validated_data.get('title', instance.title)
-        instance.tel = validated_data.get('tel', instance.tel)
-        instance.description = validated_data.get('description', instance.description)
-        instance.working_hours = validated_data.get('working_hours', instance.working_hours)
 
-        instance.save()
+class OfferUpdateSerializer(serializers.ModelSerializer):
+    
+    details = OfferDetailSerializer(many=True)
+    class Meta:
+        model = Offer
+        fields = ["id", "title", "image", "description", "details"]
+    
+    
+    def update(self, instance, validated_data):
+        details_data = validated_data.pop('details', [])
+        instance = super().update(instance, validated_data)        
+        for data in details_data:
+            instance.details.filter(offer_type=data.get('offer_type')).update(**data)
 
         return instance
