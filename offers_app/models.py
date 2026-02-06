@@ -20,6 +20,11 @@ class Offer(models.Model):
   
 class OfferDetail(models.Model):
         
+    class OfferType(models.TextChoices):
+        BASIC = "basic", "basic"
+        STANDARD = "standard", "standard"
+        PREMIUM = "premium", "premium"
+
     offer = models.ForeignKey(
         Offer,
         on_delete=models.CASCADE,
@@ -30,6 +35,10 @@ class OfferDetail(models.Model):
     delivery_time_in_days = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     features = models.JSONField()
-    offer_type = models.CharField(max_length=50)
+    offer_type = models.CharField(
+        max_length=20,
+        choices=OfferType.choices,
+        default=OfferType.BASIC,
+    )
 
 
