@@ -46,7 +46,6 @@ class OfferDetailLinkSerializer(serializers.ModelSerializer):
 
 class OfferReadSerializer(serializers.ModelSerializer):
     details = OfferDetailLinkSerializer(many=True, read_only=True)
-    min_price = serializers.SerializerMethodField()
     min_delivery_time = serializers.SerializerMethodField()
 
     class Meta:
@@ -56,16 +55,14 @@ class OfferReadSerializer(serializers.ModelSerializer):
             "title",
             "image",
             "description",
+            "created_at",
+            "updated_at",
             "min_price",
             "min_delivery_time",
             "details",
         ]
         read_only_fields = ["min_price", "min_delivery_time"]
-
-    def get_min_price(self, obj):
-        result = obj.details.aggregate(Min("price"))
-        return result["price__min"] or 0
-    
+  
     def get_min_delivery_time(self, obj):
         result = obj.details.aggregate(Min("delivery_time_in_days"))
         return result["delivery_time_in_days__min"] or 0

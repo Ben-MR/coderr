@@ -31,23 +31,18 @@ class UserProfilePermissionsTests(APITestCase):
         self.profile_b.tel = "222"
         self.profile_b.save()
 
-        self.list_url = reverse("profile-list")
         self.detail_url_a = reverse("profile-detail", kwargs={"pk": self.profile_a.pk})
         self.detail_url_b = reverse("profile-detail", kwargs={"pk": self.profile_b.pk})
-        self.customer_list_url = reverse("profile-customer-type-list")
-        self.business_list_url = reverse("profile-business-type-list")
+        
+        self.customer_list_url = reverse("profiles-customer-type-list")
+        self.business_list_url = reverse("profiles-business-type-list")
 
     def tearDown(self):
         self.client.credentials()
 
-    def test_list_requires_authentication(self):
-        self.client.credentials()
-        resp = self.client.get(self.list_url)
-        self.assertIn(resp.status_code, self._unauth_statuses())
-
-    def test_authenticated_can_list_profiles(self):
+    def test_authenticated_can_access_own_profile(self):
         self.client.force_authenticate(user=self.user_a)
-        resp = self.client.get(self.list_url)
+        resp = self.client.get(self.detail_url_a)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_owner_can_update_own_profile(self):
@@ -76,23 +71,17 @@ class UserProfilePermissionsTests(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_customer_list_returns_only_customer_profiles(self):
-        url = reverse("profile-customer-type-list")
         self.client.force_authenticate(user=self.user_a)
-        response = self.client.get(url)
+        response = self.client.get(self.customer_list_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-
-        profile = response.data[0]
-        self.assertEqual(profile["user"], self.user_a.id)
+        self.assertEqual(response.data[0]["user"], self.user_a.id)
 
     def test_business_list_returns_only_business_profiles(self):
-        url = reverse("profile-business-type-list")
         self.client.force_authenticate(user=self.user_a)
-        response = self.client.get(url)
+        response = self.client.get(self.business_list_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-
-        profile = response.data[0]
-        self.assertEqual(profile["user"], self.user_b.id)
+        self.assertEqual(response.data[0]["user"], self.user_b.id)

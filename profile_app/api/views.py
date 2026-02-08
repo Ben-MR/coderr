@@ -32,6 +32,14 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated(), IsOwnProfile()]
         return super().get_permissions()
     
+
+    
+
+class UserProfilesViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = UserProfile.objects.all()    
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserProfileDetailSerializer
+
     @action(detail=False, methods=["get"], url_path="customer")
     def customer_type_list(self, request):
         requested_profiles = UserProfile.objects.filter(user__type="customer")
@@ -45,4 +53,3 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         serializer = UserProfileListBusinessTypSerializer(requested_profiles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
