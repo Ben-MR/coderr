@@ -43,7 +43,6 @@ class OfferDetail(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # Nach dem Speichern eines Details berechnen wir den min_price des Offers neu
         self.offer.min_price = self.offer.details.aggregate(models.Min('price'))['price__min'] or 0
         self.offer.save()
 
