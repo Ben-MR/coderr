@@ -1,14 +1,14 @@
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from offers_app.models import OfferDetail
-from order_app.api.permissions import IsCustomer
-from order_app.api.serializer import OderSerializer
+from order_app.api.permissions import IsAdmin, IsBusinessUser, IsCustomer
+from order_app.api.serializer import OderSerializer, OrderUpdateSerializer
 from order_app.models import Order
 
 class OrdersViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()   
     serializer_class = OderSerializer
-    permission_classes = [IsAuthenticated(), IsCustomer()]
+    permission_classes = [IsAuthenticated, IsCustomer]
     
     def perform_create(self, serializer):
         od_id = self.request.data.get('offer_detail_id')
@@ -18,5 +18,19 @@ class OrdersViewSet(viewsets.ModelViewSet):
         serializer.save(
             customer_user=self.request.user,
             business_user=seller,
-            offer_detail=offer_detail_obj
+            offer_detail=offer_detail_obj 
     )
+        
+    def get_serializer_class(self):
+        if self.action == 'partial_update':
+            return OrderUpdateSerializer
+        
+        return OderSerializer
+        
+    def get_permissions(self):
+        if self.action in "partial_update":
+            return [IsAuthenticated(), IsBusinessUser()]
+        if self.action in "destroy":
+            return [IsAuthenticated(), IsAdmin()]
+        return super().get_permissions()
+    

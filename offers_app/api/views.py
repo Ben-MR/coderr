@@ -1,6 +1,6 @@
 import django_filters
 from rest_framework import viewsets, status
-from offers_app.api.permissions import IsOwnOffer
+from offers_app.api.permissions import IsOwnOffer, IsBusinessUser
 from offers_app.api.serializer import OfferDetailSerializer, OfferSerializer, OfferReadSerializer, OfferSingleReadSerializer, OfferUpdateSerializer
 from offers_app.models import Offer, OfferDetail
 from rest_framework.permissions import IsAuthenticated
@@ -46,7 +46,10 @@ class OffersViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ["destroy", "partial_update"]:
             return [IsAuthenticated(), IsOwnOffer()]
+        if self.action in "create":
+            return [IsAuthenticated(), IsBusinessUser()]
         return super().get_permissions()
+    
     
     def get_queryset(self):
         return Offer.objects.all().distinct()
