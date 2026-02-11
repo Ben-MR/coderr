@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'offers_app',
     'django_filters',
     'order_app',
+    'reviews_app'
 ]
 
 MIDDLEWARE = [

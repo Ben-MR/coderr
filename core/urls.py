@@ -8,4 +8,5 @@ urlpatterns = [
     path('api/', include('offers_app.api.urls')),
     path('api/', include('user_auth_app.api.urls')),
     path('api/', include('order_app.api.urls')),
+    path('api/', include('reviews_app.api.urls')),
 ]

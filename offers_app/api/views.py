@@ -58,3 +58,4 @@ class OffersViewSet(viewsets.ModelViewSet):
 class OffersDetailViewset(viewsets.ModelViewSet):
     queryset = OfferDetail.objects.all()  
     serializer_class = OfferDetailSerializer
+    

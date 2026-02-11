@@ -1,7 +1,6 @@
 from django.db import models
 from core import settings
 from offers_app.models import OfferDetail
-from offers_app.tests import User
 
 class Order(models.Model):
 
