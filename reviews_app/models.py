@@ -6,13 +6,13 @@ class Reviews(models.Model):
     business_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="sales",
+        related_name="reviewed_sales",
         db_column="business_user"
     )
     reviewer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="purchases",
+        related_name="written_reviews",
         db_column="reviewer"
     )
     rating = models.IntegerField(null=False, blank=False, default=0)
