@@ -113,7 +113,7 @@ Berechtigungen: IsAuthenticatedOrReadOnly (Lesen für alle, Schreiben nur für e
 Filter: DjangoFilterBackend für präzise API-Abfragen.
 
 ### Nutzung & Befehle
-Befehl	               Beschreibung
+Befehl	                    Beschreibung
 ```bash
 python manage.py makemigrations	   Erstellt Migrationsdateien für Modelländerungen.
 python manage.py migrate	       Wendet Änderungen auf die Datenbank an.
@@ -121,5 +121,5 @@ python manage.py runserver	       Startet den lokalen Entwicklungsserver.
 python manage.py test	           Führt die automatisierte Test-Suite aus.
 ```
 
-#Lizenz
+### Lizenz
 Dieses Projekt wurde als Lernprojekt erstellt und steht derzeit unter keiner spezifischen Lizenz.
