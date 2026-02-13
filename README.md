@@ -34,33 +34,33 @@ cd coderr-backend
 
 ##Virtual Environment erstellen:
 
-# Erstellen
+### Erstellen
 ```bash
 python -m venv env
 ```
 
-# Aktivieren (Linux/Mac)
+### Aktivieren (Linux/Mac)
 ```bash
 source env/bin/activate
 ```
 
-# Aktivieren (Windows)
+### Aktivieren (Windows)
 ```bash
 env\Scripts\activate
 ```
-#Abhängigkeiten installieren:
+## Abhängigkeiten installieren:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Datenbank initialisieren:
+### Datenbank initialisieren:
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-Server starten:
+### Server starten:
 ```bash
 python manage.py runserver
 ```
@@ -75,7 +75,7 @@ Shell öffnen:
 python manage.py shell
 ```
 
-Admin & Profil anlegen:
+### Admin & Profil anlegen:
 Kopiere diesen Block in die Shell (Passe E-Mail und Passwort ggf. an):
 
 Python
@@ -92,7 +92,7 @@ superuser = User.objects.create_superuser(
     password='securepassword'
 )
 
-# Zugehöriges Profil erstellen
+Zugehöriges Profil erstellen
 UserProfile.objects.create(
     user=superuser, 
     location='Berlin', 
@@ -103,7 +103,7 @@ UserProfile.objects.create(
 )
 ```
 
-## Konfiguration (Kern-Einstellungen)
+### Konfiguration (Kern-Einstellungen)
 Das Projekt nutzt das Django REST Framework mit folgenden Kern-Einstellungen in der settings.py:
 
 Authentifizierung: TokenAuthentication
@@ -112,7 +112,7 @@ Berechtigungen: IsAuthenticatedOrReadOnly (Lesen für alle, Schreiben nur für e
 
 Filter: DjangoFilterBackend für präzise API-Abfragen.
 
-## Nutzung & Befehle
+### Nutzung & Befehle
 Befehl	               Beschreibung
 ```bash
 python manage.py makemigrations	   Erstellt Migrationsdateien für Modelländerungen.
