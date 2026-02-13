@@ -1,11 +1,12 @@
-#Coderr Project - Backend
+# Coderr Project - Backend
+
 Coderr ist eine Freelancer-Plattform speziell für Softwareentwickler. Diese API bildet das Rückgrat der Anwendung und verwaltet Nutzer, Angebote, Bestellungen und Reviews.
 
 Das zugehörige Frontend findest du hier: coderr-frontend
 
 Version: 1.0
 
-##Funktionen
+## Funktionen
 User Management: Registrierung und Login-System mit Unterscheidung zwischen Business und Customer.
 
 Angebotsverwaltung: Erstellen und Verwalten von Dienstleistungen durch Business-User.
@@ -16,14 +17,14 @@ Review System: Kunden können Bewertungen abgeben, bearbeiten und löschen.
 
 Profile: Anpassbare Nutzerprofile für alle Teilnehmer.
 
-##Voraussetzungen
+## Voraussetzungen
 Python: Version 3.x
 
 Framework: Django & Django REST Framework
 
 Abhängigkeiten: Siehe requirements.txt
 
-##Installation
+## Installation
 Projekt klonen:
 
 ```bash
@@ -65,10 +66,10 @@ python manage.py runserver
 ```
 Die API ist nun unter http://127.0.0.1:8000 erreichbar.
 
-##Superuser (Admin) erstellen
+## Superuser (Admin) erstellen
 Um Zugriff auf das Django Admin-Panel zu erhalten, führe folgende Befehle in der Shell aus:
 
-#Shell öffnen:
+Shell öffnen:
 
 ```bash
 python manage.py shell
@@ -84,7 +85,7 @@ from coderr_app.models import UserProfile
 
 User = get_user_model()
 
-# Superuser erstellen
+Superuser erstellen
 superuser = User.objects.create_superuser(
     username='admin', 
     email='admin@example.com', 
@@ -102,7 +103,7 @@ UserProfile.objects.create(
 )
 ```
 
-##Konfiguration (Kern-Einstellungen)
+## Konfiguration (Kern-Einstellungen)
 Das Projekt nutzt das Django REST Framework mit folgenden Kern-Einstellungen in der settings.py:
 
 Authentifizierung: TokenAuthentication
@@ -111,13 +112,13 @@ Berechtigungen: IsAuthenticatedOrReadOnly (Lesen für alle, Schreiben nur für e
 
 Filter: DjangoFilterBackend für präzise API-Abfragen.
 
-##Nutzung & Befehle
-Befehl	Beschreibung
+## Nutzung & Befehle
+Befehl	               Beschreibung
 ```bash
-python manage.py makemigrations	Erstellt Migrationsdateien für Modelländerungen.
-python manage.py migrate	Wendet Änderungen auf die Datenbank an.
-python manage.py runserver	Startet den lokalen Entwicklungsserver.
-python manage.py test	Führt die automatisierte Test-Suite aus.
+python manage.py makemigrations	   Erstellt Migrationsdateien für Modelländerungen.
+python manage.py migrate	       Wendet Änderungen auf die Datenbank an.
+python manage.py runserver	       Startet den lokalen Entwicklungsserver.
+python manage.py test	           Führt die automatisierte Test-Suite aus.
 ```
 
 #Lizenz
