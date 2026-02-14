@@ -1,70 +1,48 @@
 from rest_framework.authtoken.models import Token as AuthToken
 from rest_framework import generics
-from user_auth_app.models import CustomUser
-from .serializers import CustomUserSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import RegistrationsSerializer
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework import status
+from user_auth_app.models import CustomUser
+from .serializers import CustomUserSerializer
+from .serializers import RegistrationsSerializer
+
 
 
 class CustomUserList(generics.ListCreateAPIView):
-
+    """
+    API view to retrieve a list of all users or create a new user.
+    Utilizes standard generic ListCreateAPIView for core user management.
+    """
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
 
 
 class CustomUserDetail(generics.RetrieveUpdateDestroyAPIView):
     """
-    Retrieve, update, or delete a single user profile.
-
-    - GET: Returns one UserProfile by primary key.
-    - PUT/PATCH: Updates the profile.
-    - DELETE: Removes the profile.
-
-    Notes:
-    - Access control depends on your global DRF settings or additional
-      permission_classes added here.
+    API view to retrieve, update, or delete a specific user by their ID.
+    Provides standard RESTful endpoints for individual user administration.
     """
-
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
 
 
 class RegistrationsView(APIView):
     """
-    User registration endpoint.
-
-    Accepts registration data, creates a new user account, and returns
-    a DRF auth token plus basic user information.
-
-    Expected request fields (based on RegistrationsSerializer):
-    - username
-    - email
-    - password
-    - repeated_password
+    Endpoint for public user registration.
+    
+    Processing steps:
+    1. Validates input data via RegistrationsSerializer.
+    2. Creates a new CustomUser account.
+    3. Generates an authentication token for the new user.
+    4. Returns user details and the token for immediate login.
     """
-
     permission_classes = [AllowAny]
 
     def post(self, request):
-        """
-        Register a new user.
-
-        On success:
-        - Creates the user (password is hashed in the serializer)
-        - Creates or fetches a DRF Token
-        - Returns: token, username, email, user_id
-
-        On validation error:
-        - Returns serializer errors
-
-        Returns:
-            Response: 200 with token payload or validation errors.
-        """
         serializer = RegistrationsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -83,17 +61,18 @@ class RegistrationsView(APIView):
 
 
 class CustomLogin(ObtainAuthToken):
-
+    """
+    Custom login view extending the standard ObtainAuthToken.
+    
+    Verifies credentials and returns a response containing the 
+    authentication token along with essential user profile information 
+    (username, email, and ID) for the frontend client.
+    """
     permission_classes = [AllowAny]
     authentication_classes = []
 
     def post(self, request, *args, **kwargs):
         data = request.data.copy()
-
-        # Frontend sends email -> DRF ObtainAuthToken expects username
-        # if "username" not in data and "email" in data:
-        #     data["username"] = data["email"]
-
         serializer = self.serializer_class(data=data, context={"request": request})
         if not serializer.is_valid():
             return Response(serializer.errors, status=400)
@@ -113,39 +92,16 @@ class CustomLogin(ObtainAuthToken):
 
 
 class LogoutView(APIView):
+    """
+    Endpoint for user logout.
+    
+    Requires an authenticated request. Upon invocation, it identifies 
+    and deletes the current authentication token from the database, 
+    effectively invalidating the session.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # request.auth is the Token instance under TokenAuthentication
         if request.auth is not None:
             request.auth.delete()
         return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
-
-
-# class EmailCheckView(APIView):
-#     """
-#     Endpoint to check whether a given email address exists.
-
-#     - GET /...?email=someone@example.com
-#     - Returns user details (id/email/username) if present, otherwise exists=False.
-#     """
-
-#     serializer_class = EmailCheckSerializer
-
-#     def get(self, request):
-#         """
-#         Validate the email query parameter and return existence info.
-
-#         Query params:
-#             email (str): Email address to check.
-
-#         Returns:
-#             Response: Serialized existence information.
-#         """
-#         email = request.query_params.get("email", "")
-
-#         serializer = self.serializer_class(data={"email": email})
-        
-#         if serializer.is_valid(raise_exception=True):
-#             return Response(serializer.to_representation(serializer.validated_data))
-#         return Response(serializer.errors, status=404)

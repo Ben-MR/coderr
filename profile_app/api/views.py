@@ -9,6 +9,13 @@ from rest_framework.response import Response
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing the authenticated user's profile.
+    
+    Provides detailed views and update capabilities. It dynamically switches 
+    serializers for retrieval and update actions and ensures that only the 
+    profile owner can perform modifications.
+    """
     queryset = UserProfile.objects.all()    
     permission_classes = [IsAuthenticated]
 
@@ -17,10 +24,20 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_update_class = UserProfileUpdateSerializer
 
     def get_queryset(self):
+        """
+        Returns the queryset of UserProfiles.
+        Currently returns all profiles, but provides a hook for future 
+        user-specific filtering.
+        """
         user = self.request.user
         return UserProfile.objects.all()
         
     def get_serializer_class(self):
+        """
+        Selects the appropriate serializer based on the current action.
+        - retrieve: Returns detailed profile data.
+        - update/partial_update: Returns the update-optimized serializer.
+        """
         if self.action == "retrieve":
             return self.serializer_detail_class
         if self.action in ["update", "partial_update"]:
@@ -28,20 +45,32 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        Updates and partial updates are restricted to the owner of the profile.
+        """
         if self.action in ["update", "partial_update"]:
             return [IsAuthenticated(), IsOwnProfile()]
-        return super().get_permissions()
-    
-
+        return super().get_permissions()  
     
 
 class UserProfilesViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    A read-only ViewSet for browsing user profiles.
+    
+    Includes custom actions to filter profiles based on user types 
+    (Customer or Business) with specialized list serializers for each type.
+    """
     queryset = UserProfile.objects.all()    
     permission_classes = [IsAuthenticated]
     serializer_class = UserProfileDetailSerializer
 
     @action(detail=False, methods=["get"], url_path="customer")
     def customer_type_list(self, request):
+        """
+        Custom action to retrieve a list of all profiles belonging 
+        to users with the 'customer' type.
+        """
         requested_profiles = UserProfile.objects.filter(user__type="customer")
 
         serializer = UserProfileListCustomerTypSerializer(requested_profiles, many=True)
@@ -49,6 +78,10 @@ class UserProfilesViewSet(viewsets.ReadOnlyModelViewSet):
     
     @action(detail=False, methods=["get"], url_path="business")
     def business_type_list(self, request):
+        """
+        Custom action to retrieve a list of all profiles belonging 
+        to users with the 'business' type.
+        """
         requested_profiles = UserProfile.objects.filter(user__type="business")
 
         serializer = UserProfileListBusinessTypSerializer(requested_profiles, many=True)

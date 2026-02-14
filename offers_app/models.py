@@ -3,6 +3,11 @@ from django.conf import settings
   
 
 class Offer(models.Model):
+    """
+    Represents a service offer created by a business user.
+    Stores general information such as title, description, and an optional image.
+    Maintains denormalized fields for minimum price and delivery time for performance.
+    """
     title = models.CharField(max_length=100)
     description = models.TextField()
     image = models.FileField(upload_to='offer_images/', blank=True, null=True)
@@ -19,8 +24,16 @@ class Offer(models.Model):
 
   
 class OfferDetail(models.Model):
+    """
+    Represents a specific pricing tier for an Offer (Basic, Standard, or Premium).
+    Contains details regarding revisions, delivery time, price, and specific features.
+    Automatically updates the parent Offer's minimum price upon saving.
+    """
         
     class OfferType(models.TextChoices):
+        """
+        Enumeration for different types of offer packages.
+        """
         BASIC = "basic", "basic"
         STANDARD = "standard", "standard"
         PREMIUM = "premium", "premium"
@@ -42,8 +55,10 @@ class OfferDetail(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        """
+        Custom save method to recalculate the parent Offer's minimum price 
+        whenever a detail tier is created or updated.
+        """
         super().save(*args, **kwargs)
         self.offer.min_price = self.offer.details.aggregate(models.Min('price'))['price__min'] or 0
         self.offer.save()
-
-

@@ -2,6 +2,13 @@ from django.db import models
 from core import settings
 
 class Reviews(models.Model):
+    """
+    Represents a review and rating left by a customer for a business user.
+
+    Tracks the relationship between the reviewer and the professional service provider.
+    Includes a numerical rating and a text description, with timestamps for 
+    record-keeping and a uniqueness constraint to ensure integrity.
+    """
 
     business_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -21,5 +28,10 @@ class Reviews(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        """
+        Metadata and constraints for the Reviews model.
+        
+        Enforces a unique constraint to ensure that a reviewer can only 
+        submit one review for a specific business user.
+        """
         unique_together = ['business_user', 'reviewer']
-

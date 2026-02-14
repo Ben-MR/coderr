@@ -3,6 +3,13 @@ from django.db import models
 
 
 class UserProfile(models.Model):
+    """
+    Extends the base User model with additional profile information.
+
+    This model stores supplementary data for both customers and business users,
+    including contact details, location, and professional descriptions. 
+    It is linked to the authentication user via a OneToOne relationship.
+    """
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -37,7 +44,6 @@ class UserProfile(models.Model):
         blank=True,
         null=True,
     )
-
 
 
     def __str__(self):

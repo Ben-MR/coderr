@@ -4,15 +4,22 @@ from user_auth_app.models import CustomUser
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-
-
+    """
+    Serializer for the CustomUser model.
+    Provides a basic representation of user data including username, 
+    email, password, and account type.
+    """
     class Meta:
         model = CustomUser
         fields = ["username", "email", "password", "type"]
 
 
 class RegistrationsSerializer(serializers.ModelSerializer):
-
+    """
+    Serializer for handling new user registrations.
+    Includes logic for password confirmation, user creation, and 
+    the automatic generation of an associated UserProfile.
+    """
     repeated_password = serializers.CharField(write_only=True)
     username = serializers.CharField(write_only=True)
     type = serializers.CharField(write_only=True)
@@ -27,7 +34,11 @@ class RegistrationsSerializer(serializers.ModelSerializer):
         }
 
     def save(self):
-
+        """
+        Creates a new CustomUser and an accompanying UserProfile.
+        Validates that both password fields match, hashes the password 
+        using set_password(), and triggers profile creation.
+        """
         pw = self.validated_data["password"]
         repeated_pw = self.validated_data["repeated_password"]
 
@@ -50,55 +61,11 @@ class RegistrationsSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         """
-        Ensure the email address is unique.
-
-        Args:
-            value (str): Email address provided during registration.
-
-        Raises:
-            ValidationError: If a user with this email already exists.
-
-        Returns:
-            str: The validated email value.
+        Ensures the uniqueness of the email address within the platform.
+        Checks the database for existing records to prevent duplicate registrations.
         """
         if CustomUser.objects.filter(email=value).exists():
             raise serializers.ValidationError(
                 "Email already exists"
             )
         return value
-
-
-# class EmailCheckSerializer(serializers.Serializer):
-#     """
-#     Serializer used to check whether an email address
-#     is already registered.
-
-#     Returns basic user information if the email exists.
-#     """
-
-#     email = serializers.EmailField()
-#     exists = serializers.BooleanField(read_only=True)
-#     id = serializers.IntegerField(read_only=True)
-#     first_name = serializers.CharField(read_only=True)
-
-#     def to_representation(self, data):
-#         """
-#         Return information about the user associated with the given email.
-
-#         If a user exists:
-#         - return id, email, and username
-
-#         If no user exists:
-#         - return exists = False
-#         """
-#         email = data["email"]
-#         user = User.objects.filter(email__iexact=email).first()
-
-#         if user:
-#             return {
-#                 "id": user.id,
-#                 "email": user.email,
-#                 "fullname": user.first_name,
-#             }
-
-#         return {"exists": False}

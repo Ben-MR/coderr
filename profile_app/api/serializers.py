@@ -2,6 +2,11 @@ from rest_framework import serializers
 from profile_app.models import UserProfile
 
 class UserProfileListCustomerTypSerializer(serializers.ModelSerializer):
+    """
+    Serializer for a simplified customer profile view.
+    Retrieves basic information by mapping fields from the related User model 
+    to the profile representation.
+    """
     user=serializers.PrimaryKeyRelatedField(read_only=True)
     username = serializers.CharField(source="user.username", read_only=True)
     first_name = serializers.CharField(source="user.first_name", read_only=True)
@@ -13,6 +18,11 @@ class UserProfileListCustomerTypSerializer(serializers.ModelSerializer):
         fields = ["user", "username", "first_name", "last_name", "file", "type"]
 
 class UserProfileListBusinessTypSerializer(serializers.ModelSerializer):
+    """
+    Serializer for a professional business profile view.
+    Extends the basic profile with business-specific details such as 
+    location, contact number, description, and working hours.
+    """
     user=serializers.PrimaryKeyRelatedField(read_only=True)
     username = serializers.CharField(source="user.username", read_only=True)
     first_name = serializers.CharField(source="user.first_name", read_only=True)
@@ -24,6 +34,11 @@ class UserProfileListBusinessTypSerializer(serializers.ModelSerializer):
         fields = ["user", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type"]
 
 class UserProfileDetailSerializer(serializers.ModelSerializer):
+    """
+    Comprehensive serializer for full user profile details.
+    Aggregates all relevant user and profile data, including account metadata 
+    like email and the registration date.
+    """
     user=serializers.PrimaryKeyRelatedField(read_only=True)
     username = serializers.CharField(source="user.username", read_only=True)
     first_name = serializers.CharField(source="user.first_name", read_only=True)
@@ -37,6 +52,11 @@ class UserProfileDetailSerializer(serializers.ModelSerializer):
         fields = ["user", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type", "email", "created_at"]
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer to handle updates for user profiles.
+    Supports writable fields from both the Profile model and the nested 
+    User model (first name, last name, and email).
+    """
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
     email = serializers.EmailField(source="user.email")
@@ -45,6 +65,11 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         fields = ["first_name", "last_name", "location", "tel", "description", "working_hours", "email"]
 
     def update(self, instance, validated_data):
+        """
+        Custom update method to synchronize data across two models.
+        Updates the primary User instance first before applying changes 
+        to the UserProfile instance.
+        """
         user_data = validated_data.pop('user', {})
         user = instance.user
         
@@ -60,5 +85,4 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         instance.working_hours = validated_data.get('working_hours', instance.working_hours)
 
         instance.save()
-
         return instance
