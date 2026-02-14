@@ -6,6 +6,7 @@ from order_app.api.serializer import OderSerializer, OrderUpdateSerializer
 from order_app.models import Order
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from django.db.models import Q
 
 class OrdersViewSet(viewsets.ModelViewSet):
     """
@@ -47,6 +48,20 @@ class OrdersViewSet(viewsets.ModelViewSet):
         if self.action == 'partial_update':
             return OrderUpdateSerializer        
         return OderSerializer
+    
+    def get_queryset(self):
+        """
+        Returns the queryset of orders filtered by the current user's involvement.
+        The Q objects are used to perform an OR filter between customer and business user.
+        """
+        user = self.request.user
+        
+        if user.is_superuser:
+            return Order.objects.all()
+            
+        return Order.objects.filter(
+            Q(customer_user=user) | Q(business_user=user)
+        ).distinct()
         
     def get_permissions(self):
         """

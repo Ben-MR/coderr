@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from base_info_app.api.serializer import BaseInfoSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from offers_app.models import Offer
 from offers_app.tests import User
 from reviews_app.models import Reviews
@@ -17,7 +17,8 @@ class BaseInfoViewSet(viewsets.ModelViewSet):
     """
     queryset = Reviews.objects.all()   
     serializer_class = BaseInfoSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+    authentication_classes = []
     
     def list(self, request, *args, **kwargs):
         """
