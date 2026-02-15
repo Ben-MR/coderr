@@ -6,6 +6,7 @@ from offers_app.models import Offer, OfferDetail
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import AllowAny
 
 class StandardResultsSetPagination(PageNumberPagination):
     """
@@ -71,8 +72,21 @@ class OffersViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated(), IsOwnOffer()]
         if self.action in "create":
             return [IsAuthenticated(), IsBusinessUser()]
+        if self.action in "list":
+            return [AllowAny()]
         return super().get_permissions()
     
+    def get_authenticators(self):
+            """
+            Disable authentication for the 'list' action.
+            Since self.action is not yet set, we check the request method 
+            and the URL structure.
+            """
+            # In einem ViewSet ist 'list' normalerweise ein GET-Request auf die Basis-URL (ohne ID)
+            if self.request and self.request.method == 'GET' and not self.kwargs.get('pk'):
+                return []
+            return super().get_authenticators()
+        
     
     def get_queryset(self):
         """

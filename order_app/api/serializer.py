@@ -22,9 +22,23 @@ class OderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = [
-            'id', 'business_user', 'customer_user',  'title', 
-            'revisions', 'delivery_time_in_days', 'price', 'features', "offer_type", 'status', 'created_at'
+            'id', 'business_user', 'customer_user',  'title', 'revisions', 'delivery_time_in_days',
+             'price', 'features', "offer_type", 'status', 'created_at', 'updated_at'
         ]
+
+    def to_representation(self, instance):
+        """
+        Custom representation to remove 'updated_at' during the creation process (POST).
+        It will still be visible in normal GET (list/retrieve) requests.
+        """
+        representation = super().to_representation(instance)
+        request = self.context.get('request')
+        
+        # Wenn die Methode POST ist, wird updated_at aus der Antwort gelöscht
+        if request and request.method == 'POST':
+            representation.pop('updated_at', None)
+            
+        return representation
 
 class OrderUpdateSerializer(serializers.ModelSerializer):
     """

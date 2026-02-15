@@ -7,6 +7,7 @@ from order_app.models import Order
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 class OrdersViewSet(viewsets.ModelViewSet):
     """
@@ -27,18 +28,20 @@ class OrdersViewSet(viewsets.ModelViewSet):
         and checks if an active order for this specific package already exists 
         to prevent duplicates.
         """
-        od_id = self.request.data.get('offer_detail_id')
-        offer_detail_obj = OfferDetail.objects.get(id=od_id)
-        seller = offer_detail_obj.offer.user
+        od_id = self.request.data.get('offer_detail_id')            
+        if not od_id:
+                raise ValidationError({"offer_detail_id": "Dieses Feld ist erforderlich."})
 
+        offer_detail_obj = get_object_or_404(OfferDetail, id=od_id)            
+        seller = offer_detail_obj.offer.user
         if Order.objects.filter(customer_user=self.request.user, offer_detail=offer_detail_obj).exists():        
-            raise ValidationError("Du hast dieses Paket bereits bestellt.")
+                raise ValidationError("Du hast dieses Paket bereits bestellt.")
 
         serializer.save(
             customer_user=self.request.user,
             business_user=seller,
             offer_detail=offer_detail_obj 
-    )
+        )
         
     def get_serializer_class(self):
         """

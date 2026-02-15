@@ -2,6 +2,8 @@ from rest_framework import serializers
 from offers_app.models import Offer, OfferDetail
 from django.db.models import Max, Min
 
+from reviews_app.tests import User
+
 
 class OfferDetailSerializer(serializers.ModelSerializer):
     """
@@ -59,6 +61,17 @@ class OfferDetailLinkSerializer(serializers.ModelSerializer):
         model = OfferDetail
         fields = ['id', 'url']
 
+class OfferUserDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the user information associated with an offer.
+    Provides a read-only representation of the offer's owner.
+    """
+   
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "username"]
+
+
 class OfferReadSerializer(serializers.ModelSerializer):
     """
     Serializer for list views of offers.
@@ -67,19 +80,22 @@ class OfferReadSerializer(serializers.ModelSerializer):
     """
     details = OfferDetailLinkSerializer(many=True, read_only=True)
     min_delivery_time = serializers.SerializerMethodField()
+    user_details = OfferUserDetailSerializer(source="user", read_only=True)
 
     class Meta:
         model = Offer
         fields = [
             "id",
+            "user",
             "title",
             "image",
             "description",
             "created_at",
             "updated_at",
+            "details",
             "min_price",
             "min_delivery_time",
-            "details",
+            "user_details"            
         ]
         read_only_fields = ["min_price", "min_delivery_time"]
   

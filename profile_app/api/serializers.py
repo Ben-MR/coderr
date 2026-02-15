@@ -13,9 +13,15 @@ class UserProfileListCustomerTypSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source="user.last_name", read_only=True)
     type = serializers.CharField(source="user.type", read_only=True)
     file = serializers.ImageField(source="ImageField", read_only=True)
+    location = serializers.CharField(read_only=True)
+    tel = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    working_hours = serializers.CharField(read_only=True)
+    type = serializers.CharField(source="user.type", read_only=True)
+
     class Meta:
         model = UserProfile
-        fields = ["user", "username", "first_name", "last_name", "file", "type"]
+        fields = ["user", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type"]
 
 class UserProfileListBusinessTypSerializer(serializers.ModelSerializer):
     """
@@ -29,6 +35,11 @@ class UserProfileListBusinessTypSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source="user.last_name", read_only=True)
     type = serializers.CharField(source="user.type", read_only=True)
     file = serializers.ImageField(source="ImageField", read_only=True)
+    location = serializers.CharField(read_only=True)
+    tel = serializers.CharField(read_only=True)
+    description = serializers.CharField(read_only=True)
+    working_hours = serializers.CharField(read_only=True)
+    type = serializers.CharField(source="user.type", read_only=True)
     class Meta:
         model = UserProfile 
         fields = ["user", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type"]

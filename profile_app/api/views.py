@@ -65,6 +65,14 @@ class UserProfilesViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = UserProfileDetailSerializer
 
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            instance = self.get_object()
+            if instance.user.type == "business":
+                return UserProfileListBusinessTypSerializer
+            return UserProfileListCustomerTypSerializer
+        return UserProfileDetailSerializer
+
     @action(detail=False, methods=["get"], url_path="customer")
     def customer_type_list(self, request):
         """
