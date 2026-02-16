@@ -1,125 +1,132 @@
 # Coderr Project - Backend
 
-Coderr ist eine Freelancer-Plattform speziell für Softwareentwickler. Diese API bildet das Rückgrat der Anwendung und verwaltet Nutzer, Angebote, Bestellungen und Reviews.
+Coderr is a freelancer platform specifically for software developers.
+This API forms the backbone of the application and manages users,
+offers, orders, and reviews.
 
-Das zugehörige Frontend findest du hier: coderr-frontend
+You can find the corresponding frontend here: coderr-frontend
 
 Version: 1.0
 
-## Funktionen
-User Management: Registrierung und Login-System mit Unterscheidung zwischen Business und Customer.
+## Features
 
-Angebotsverwaltung: Erstellen und Verwalten von Dienstleistungen durch Business-User.
+User Management: Registration and login system with distinction between
+Business and Customer.
 
-Bestellsystem: Vollständiger Bestellprozess für Kunden.
+Offer Management: Create and manage services by Business users.
 
-Review System: Kunden können Bewertungen abgeben, bearbeiten und löschen.
+Order System: Complete ordering process for customers.
 
-Profile: Anpassbare Nutzerprofile für alle Teilnehmer.
+Review System: Customers can submit, edit, and delete reviews.
 
-## Voraussetzungen
+Profiles: Automatically created and assigned user profiles for all
+participants.
+
+## Requirements
+
 Python: Version 3.x
 
 Framework: Django & Django REST Framework
 
-Abhängigkeiten: Siehe requirements.txt
+Dependencies (requirements.txt): - asgiref==3.11.0 - Django==6.0.1 -
+django-cors-headers==4.9.0 - django-filter==25.2 -
+djangorestframework==3.16.1 - sqlparse==0.5.5 - tzdata==2025.3
 
 ## Installation
-Projekt klonen:
 
-```bash
+Clone the project:
+
+``` bash
 git clone git@github.com:DanielSchn/coderr-backend.git
 cd coderr-backend
 ```
 
-##Virtual Environment erstellen:
+## Create Virtual Environment
 
-### Erstellen
-```bash
+### Create
+
+``` bash
 python -m venv env
 ```
 
-### Aktivieren (Linux/Mac)
-```bash
+### Activate (Linux/Mac)
+
+``` bash
 source env/bin/activate
 ```
 
-### Aktivieren (Windows)
-```bash
+### Activate (Windows)
+
+``` bash
 env\Scripts\activate
 ```
-## Abhängigkeiten installieren:
 
-```bash
+## Install Dependencies
+
+``` bash
 pip install -r requirements.txt
 ```
 
-### Datenbank initialisieren:
-```bash
+### Initialize Database
+
+``` bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### Server starten:
-```bash
+### Start Server
+
+``` bash
 python manage.py runserver
 ```
-Die API ist nun unter http://127.0.0.1:8000 erreichbar.
 
-## Superuser (Admin) erstellen
-Um Zugriff auf das Django Admin-Panel zu erhalten, führe folgende Befehle in der Shell aus:
+The API is now accessible at http://127.0.0.1:8000.
 
-Shell öffnen:
+## Create Superuser (Admin)
 
-```bash
-python manage.py shell
+The project supports the default Django command for creating
+administrators:
+
+``` bash
+python manage.py createsuperuser
 ```
 
-### Admin & Profil anlegen:
-Kopiere diesen Block in die Shell (Passe E-Mail und Passwort ggf. an):
+A corresponding UserProfile is created and correctly assigned
+automatically.
 
-Python
-```bash
-from django.contrib.auth import get_user_model
-from coderr_app.models import UserProfile
+### Automatic Profile Creation
 
-User = get_user_model()
+User profiles are generated automatically using Django signals when a
+new user is created (including superusers). This ensures that:
 
-Superuser erstellen
-superuser = User.objects.create_superuser(
-    username='admin', 
-    email='admin@example.com', 
-    password='securepassword'
-)
+-   Every user always has exactly one profile
+-   Profiles are correctly linked to their user
+-   No manual shell commands are required
+-   The standard Django `createsuperuser` command works as expected
+-   The project is clone‑friendly and production‑ready
 
-Zugehöriges Profil erstellen
-UserProfile.objects.create(
-    user=superuser, 
-    location='Berlin', 
-    tel='1234567890', 
-    description='Admin profile', 
-    working_hours='9 AM - 5 PM', 
-    type='staff'
-)
+## Configuration (Core Settings)
+
+The project uses Django REST Framework with the following core settings
+in settings.py:
+
+Authentication: TokenAuthentication
+
+Permissions: IsAuthenticatedOrReadOnly (Read for everyone, write only
+for logged‑in users).
+
+Filters: DjangoFilterBackend for precise API queries.
+
+## Usage & Commands
+
+``` bash
+python manage.py makemigrations   # Create migration files for model changes
+python manage.py migrate          # Apply changes to the database
+python manage.py runserver        # Start the local development server
+python manage.py test             # Run the automated test suite
 ```
 
-### Konfiguration (Kern-Einstellungen)
-Das Projekt nutzt das Django REST Framework mit folgenden Kern-Einstellungen in der settings.py:
+## License
 
-Authentifizierung: TokenAuthentication
-
-Berechtigungen: IsAuthenticatedOrReadOnly (Lesen für alle, Schreiben nur für eingeloggte User).
-
-Filter: DjangoFilterBackend für präzise API-Abfragen.
-
-### Nutzung & Befehle
-Befehl	                    Beschreibung
-```bash
-python manage.py makemigrations	   Erstellt Migrationsdateien für Modelländerungen.
-python manage.py migrate	       Wendet Änderungen auf die Datenbank an.
-python manage.py runserver	       Startet den lokalen Entwicklungsserver.
-python manage.py test	           Führt die automatisierte Test-Suite aus.
-```
-
-### Lizenz
-Dieses Projekt wurde als Lernprojekt erstellt und steht derzeit unter keiner spezifischen Lizenz.
+This project was created as a learning project and is currently not
+under any specific license.
