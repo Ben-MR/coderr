@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from offers_app.models import OfferDetail
-from order_app.api.permissions import IsAdmin, IsBusinessUser, IsCustomer
+from order_app.api.permissions import IsAdmin, IsBusinessUser, IsCustomer, IsOwnOrder
 from order_app.api.serializer import OderSerializer, OrderUpdateSerializer
 from order_app.models import Order
 from rest_framework.response import Response
@@ -77,6 +77,9 @@ class OrdersViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated(), IsBusinessUser()]
         if self.action in "destroy":
             return [IsAuthenticated(), IsAdmin()]
+        if self.action in "list":
+            return [IsAuthenticated(), IsOwnOrder()]
+
         return super().get_permissions()
 
 class OrderCountViewSet(viewsets.ViewSet):

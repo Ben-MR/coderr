@@ -24,8 +24,8 @@ class OfferFilter(django_filters.FilterSet):
     and a maximum delivery time limit across nested offer details.
     """
     creator_id = django_filters.NumberFilter(field_name='user__id')
-    min_price = django_filters.NumberFilter(field_name='details__price', lookup_expr='gte')
-    max_delivery_time = django_filters.NumberFilter(field_name='details__delivery_time_in_days', lookup_expr='lte')
+    min_price = django_filters.NumberFilter(field_name='details__price', lookup_expr='lte') 
+    max_delivery_time = django_filters.NumberFilter(field_name='details__delivery_time_in_days', lookup_expr='gte')
 
     class Meta:
         model = Offer
@@ -77,15 +77,14 @@ class OffersViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
     
     def get_authenticators(self):
-            """
-            Disable authentication for the 'list' action.
-            Since self.action is not yet set, we check the request method 
-            and the URL structure.
-            """
-            # In einem ViewSet ist 'list' normalerweise ein GET-Request auf die Basis-URL (ohne ID)
-            if self.request and self.request.method == 'GET' and not self.kwargs.get('pk'):
-                return []
-            return super().get_authenticators()
+        """
+        Disable authentication for the 'list' action.
+        Since self.action is not yet set, we check the request method 
+        and the URL structure.
+        """
+        if self.request and self.request.method == 'GET' and not self.kwargs.get('pk'):
+            return []
+        return super().get_authenticators()
         
     
     def get_queryset(self):

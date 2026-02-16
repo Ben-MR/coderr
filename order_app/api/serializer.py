@@ -9,7 +9,7 @@ class OderSerializer(serializers.ModelSerializer):
     (title, price, delivery time, etc.) from the associated OfferDetail.
     The customer and business users are linked automatically and treated as read-only.
     """
-    title = serializers.ReadOnlyField(source='offer_detail.offer.title')
+    title = serializers.ReadOnlyField(source='offer_detail.title')
     revisions = serializers.ReadOnlyField(source='offer_detail.revisions')
     delivery_time_in_days = serializers.ReadOnlyField(source='offer_detail.delivery_time_in_days')
     price = serializers.ReadOnlyField(source='offer_detail.price')
@@ -34,7 +34,6 @@ class OderSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         request = self.context.get('request')
         
-        # Wenn die Methode POST ist, wird updated_at aus der Antwort gelöscht
         if request and request.method == 'POST':
             representation.pop('updated_at', None)
             
@@ -47,7 +46,7 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
     Maintains visibility of all order details while specifically 
     allowing modification of the 'status' field.
     """
-    title = serializers.ReadOnlyField(source='offer_detail.offer.title')
+    title = serializers.ReadOnlyField(source='offer_detail.title')
     revisions = serializers.ReadOnlyField(source='offer_detail.revisions')
     delivery_time_in_days = serializers.ReadOnlyField(source='offer_detail.delivery_time_in_days')
     price = serializers.ReadOnlyField(source='offer_detail.price')

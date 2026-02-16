@@ -15,29 +15,31 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         model = OfferDetail
         fields = ["id", "title", "revisions", "delivery_time_in_days", "price", "features", "offer_type"]
 
+class OfferDetailCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the specific pricing tiers for the respone of an offer.
+    Handles fields like title, revisions, delivery time, and price 
+    for basic, standard, or premium versions of a service.
+    """
+    offer_type = serializers.ChoiceField(choices=['basic', 'standard', 'premium'], required=True)
+    class Meta:
+        model = OfferDetail
+        fields = ["title", "revisions", "delivery_time_in_days", "price", "features", "offer_type"]        
+
 class OfferSerializer(serializers.ModelSerializer):
     """
-    Serializer used for creating new service offers.
-    Handles the primary offer data and includes nested creation of 
-    multiple OfferDetail instances.
+    Custom create method to handle nested OfferDetail objects.
+    Links the new offer to the authenticated user and creates 
+    associated detail tiers in the database.
     """
-    details = OfferDetailSerializer(many=True)
+    details = OfferDetailCreateSerializer(many=True) 
+    
 
     class Meta:
         model = Offer
-        fields = [
-            "title",
-            "image",
-            "description",
-            "details",
-        ]
+        fields = ["title", "image", "description", "details"]
 
     def create(self, validated_data):
-        """
-        Custom create method to handle nested OfferDetail objects.
-        Links the new offer to the authenticated user and creates 
-        associated detail tiers in the database.
-        """
         user = self.context['request'].user        
         details_list = validated_data.pop('details')    
         offer = Offer.objects.create(user=user, **validated_data)
@@ -79,6 +81,7 @@ class OfferReadSerializer(serializers.ModelSerializer):
     while linking to detail tiers via URLs.
     """
     details = OfferDetailLinkSerializer(many=True, read_only=True)
+    min_price = serializers.SerializerMethodField()
     min_delivery_time = serializers.SerializerMethodField()
     user_details = OfferUserDetailSerializer(source="user", read_only=True)
 
@@ -99,13 +102,13 @@ class OfferReadSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["min_price", "min_delivery_time"]
   
+    def get_min_price(self, obj): 
+        from django.db.models import Min
+        return obj.details.aggregate(Min('price'))['price__min'] or 0
+
     def get_min_delivery_time(self, obj):
-        """
-        Calculates the minimum delivery time among all associated 
-        pricing tiers for a specific offer.
-        """
-        result = obj.details.aggregate(Min("delivery_time_in_days"))
-        return result["delivery_time_in_days__min"] or 0
+        from django.db.models import Min
+        return obj.details.aggregate(Min('delivery_time_in_days'))['delivery_time_in_days__min'] or 0
     
 class OfferSingleReadSerializer(serializers.ModelSerializer):
     """

@@ -38,3 +38,13 @@ class IsAdmin(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return request.user.is_superuser
+    
+class IsOwnOrder(permissions.BasePermission):
+    """
+    Object-level permission to ensure users can only access their own orders.
+    
+    Grants access if the requesting user is either the customer who placed the order 
+    or the business user who received it.
+    """
+    def has_object_permission(self, request, view, obj):
+        return obj.customer_user == request.user or obj.business_user == request.user
