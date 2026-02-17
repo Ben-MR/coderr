@@ -24,13 +24,17 @@ participants.
 
 ## Requirements
 
-Python: Version 3.x
-
+Python: 3.13.x (Developed and tested with 3.13.7)
+Database: SQLite (Default)
+Minimum Python Version: 3.10+ (Required due to Django 6.0 features)
 Framework: Django & Django REST Framework
 
-Dependencies (requirements.txt): - asgiref==3.11.0 - Django==6.0.1 -
-django-cors-headers==4.9.0 - django-filter==25.2 -
-djangorestframework==3.16.1 - sqlparse==0.5.5 - tzdata==2025.3
+Dependencies (requirements.txt): 
+- asgiref==3.11.0
+- Django==6.0.1
+- django-cors-headers==4.9.0
+- django-filter==25.2
+- djangorestframework==3.16.1 - sqlparse==0.5.5 - tzdata==2025.3
 
 ## Installation
 
@@ -46,7 +50,7 @@ cd coderr-backend
 ### Create
 
 ``` bash
-python -m venv env
+python -m venv venv
 ```
 
 ### Activate (Linux/Mac)
