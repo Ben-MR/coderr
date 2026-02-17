@@ -52,7 +52,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         """
         if self.action in ["update", "partial_update"]:
             return [IsAuthenticated(), IsOwnProfile()]
-        return super().get_permissions()  
+        return [IsAuthenticated()]
+        
     
     def get_object(self):
         """
@@ -60,8 +61,11 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         This prevents mismatches if Profile IDs and User IDs are not identical.
         """
         pk = self.kwargs.get('pk')
-        return get_object_or_404(UserProfile, user__id=pk)
-    
+        obj = get_object_or_404(UserProfile, user__id=pk)        
+        self.check_object_permissions(self.request, obj)
+        
+        return obj
+
 
 class UserProfilesViewSet(viewsets.ReadOnlyModelViewSet):
     """

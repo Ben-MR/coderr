@@ -13,28 +13,13 @@ class UserProfileListCustomerTypSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source="user.last_name", read_only=True)
     type = serializers.CharField(source="user.type", read_only=True)
     file = serializers.ImageField(source="ImageField", read_only=True)
-    location = serializers.SerializerMethodField(read_only=True)
-    tel = serializers.SerializerMethodField(read_only=True)
-    description = serializers.SerializerMethodField(read_only=True)
-    working_hours = serializers.SerializerMethodField(read_only=True)
-    type = serializers.CharField(source="user.type", read_only=True)
+    uploaded_at = serializers.DateTimeField(source="user.date_joined", read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = ["user", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type"]
+        fields = ["user", "username", "first_name", "last_name", "file", "uploaded_at", "type"]
     
-    def get_location(self, obj):
-        return obj.location or ""
-
-    def get_tel(self, obj):
-        return obj.tel or ""
-    
-    def get_description(self, obj):
-        return obj.description or ""
-    
-    def get_working_hours(self, obj):
-        return obj.working_hours or ""
-        
+     
 
 class UserProfileListBusinessTypSerializer(serializers.ModelSerializer):
     """
@@ -110,7 +95,7 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
     User model (first name, last name, and email).
     """
     user = serializers.CharField(source="user.id", read_only=True)
-    userName = serializers.CharField(source="user.username", read_only=True)
+    username = serializers.CharField(source="user.username", read_only=True)
     first_name = serializers.CharField(source="user.first_name")
     last_name = serializers.CharField(source="user.last_name")
     email = serializers.EmailField(source="user.email")
@@ -118,7 +103,7 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(source="user.date_joined", read_only=True)
     class Meta:
         model = UserProfile
-        fields = ["user", "userName", "first_name", "last_name", "location", "tel", "description", "working_hours", "type", "email", "created_at"]
+        fields = ["user", "username", "first_name", "last_name", "location", "tel", "description", "working_hours", "type", "email", "created_at"]
 
     def update(self, instance, validated_data):
         """

@@ -117,10 +117,21 @@ class OfferSingleReadSerializer(serializers.ModelSerializer):
     and timestamps.
     """
     details = OfferDetailLinkSerializer(many=True, read_only=True)
+    min_price = serializers.SerializerMethodField()
+    min_delivery_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Offer
-        fields = ["id", "user", "title", "image", "description", "created_at",  "updated_at", "details"]
+        fields = ["id", "user", "title", "image", "description", "created_at",  "updated_at", "details", "min_price", "min_delivery_time"]
+
+    def get_min_price(self, obj): 
+        from django.db.models import Min
+        return obj.details.aggregate(Min('price'))['price__min'] or 0
+
+    def get_min_delivery_time(self, obj):
+        from django.db.models import Min
+        return obj.details.aggregate(Min('delivery_time_in_days'))['delivery_time_in_days__min'] or 0    
+
 
 
 class OfferUpdateSerializer(serializers.ModelSerializer):

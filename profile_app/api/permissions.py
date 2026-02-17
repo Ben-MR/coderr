@@ -1,7 +1,7 @@
-from rest_framework.permissions import BasePermission
+from rest_framework import permissions
 
 
-class IsOwnProfile(BasePermission):
+class IsOwnProfile(permissions.BasePermission):
     """
     Object-level permission to only allow users to edit or delete their own profile.
     
@@ -9,7 +9,6 @@ class IsOwnProfile(BasePermission):
     the ID of the currently authenticated user.
     """
     def has_object_permission(self, request, view, obj):
-        user = request.user
-        return (
-            obj.user_id == user.id
-        )
+        return obj.user == request.user
+        
+    

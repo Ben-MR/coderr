@@ -9,6 +9,8 @@ from rest_framework.exceptions import ValidationError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from reviews_app.tests import User
+
 class OrdersViewSet(viewsets.ModelViewSet):
     """
     Main ViewSet for managing orders.
@@ -20,6 +22,11 @@ class OrdersViewSet(viewsets.ModelViewSet):
     serializer_class = OderSerializer
     permission_classes = [IsAuthenticated, IsCustomer]
     
+    def get_object(self):
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+        self.check_object_permissions(self.request, obj)
+        return obj
+
     def perform_create(self, serializer):
         """
         Creates a new order and assigns the customer and business user.
@@ -75,12 +82,14 @@ class OrdersViewSet(viewsets.ModelViewSet):
         """
         if self.action == "partial_update":
             return [IsAuthenticated(), IsBusinessUser()]
-        if self.action in "destroy":
+        if self.action == "destroy":
             return [IsAuthenticated(), IsAdmin()]
-        if self.action in "list":
+        if self.action == "list":
             return [IsAuthenticated(), IsOwnOrder()]
 
         return super().get_permissions()
+    
+
 
 class OrderCountViewSet(viewsets.ViewSet):
     """
@@ -92,7 +101,8 @@ class OrderCountViewSet(viewsets.ViewSet):
         """
         Returns the count of all orders assigned to the business user identified by pk.
         """
-        order_count = Order.objects.filter(business_user_id=pk).count()
+        get_object_or_404(User, id=pk, type='business')
+        order_count = Order.objects.filter(business_user_id=pk).count()        
         return Response({'order_count': order_count}, status=status.HTTP_200_OK)
     
 class OrderCompletedCountViewSet(viewsets.ViewSet):
@@ -105,5 +115,6 @@ class OrderCompletedCountViewSet(viewsets.ViewSet):
         """
         Returns the count of orders with the status 'completed' for the business user identified by pk.
         """
-        order_completed_count = Order.objects.filter(business_user_id=pk, status='completed').count()
-        return Response({'completed_order_count': order_completed_count}, status=status.HTTP_200_OK)
+        get_object_or_404(User, id=pk, type='business')
+        order_count = Order.objects.filter(business_user_id=pk, status='completed').count()        
+        return Response({'order_count': order_count}, status=status.HTTP_200_OK)

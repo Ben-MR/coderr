@@ -8,6 +8,15 @@ User = get_user_model()
 
 class OfferAPITests(APITestCase):
 
+    data = {
+    "title": "Test Offer",
+    "description": "Test Desc",
+    "details": [
+        {"offer_type": "basic", "price": 10, "revisions": 1, "delivery_time_in_days": 1},
+        {"offer_type": "standard", "price": 20, "revisions": 2, "delivery_time_in_days": 2},
+        {"offer_type": "premium", "price": 30, "revisions": 3, "delivery_time_in_days": 3},
+    ]
+    }
     def setUp(self):
         self.user = User.objects.create_user(
             username='testworker', 

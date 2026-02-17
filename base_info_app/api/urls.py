@@ -1,7 +1,10 @@
-from django.urls import path
+from django.urls import path, include
 from .views import BaseInfoViewSet
 from rest_framework import routers
 
-router = routers.SimpleRouter()
-router.register(r'base-info', BaseInfoViewSet, basename="offers")
-urlpatterns = router.urls
+router = routers.DefaultRouter()
+router.register(r'base-info', BaseInfoViewSet, basename="base-info")
+
+urlpatterns = [
+    path('', include(router.urls)),
+]
