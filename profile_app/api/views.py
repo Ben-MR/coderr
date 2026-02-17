@@ -6,6 +6,7 @@ from profile_app.models import UserProfile
 from .serializers import UserProfileDetailSerializer, UserProfileUpdateSerializer, UserProfileListCustomerTypSerializer, UserProfileListBusinessTypSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -52,6 +53,14 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         if self.action in ["update", "partial_update"]:
             return [IsAuthenticated(), IsOwnProfile()]
         return super().get_permissions()  
+    
+    def get_object(self):
+        """
+        Retrieves the profile based on the User's ID (from the URL).
+        This prevents mismatches if Profile IDs and User IDs are not identical.
+        """
+        pk = self.kwargs.get('pk')
+        return get_object_or_404(UserProfile, user__id=pk)
     
 
 class UserProfilesViewSet(viewsets.ReadOnlyModelViewSet):

@@ -13,15 +13,27 @@ class UserProfileListCustomerTypSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source="user.last_name", read_only=True)
     type = serializers.CharField(source="user.type", read_only=True)
     file = serializers.ImageField(source="ImageField", read_only=True)
-    location = serializers.CharField(read_only=True)
-    tel = serializers.CharField(read_only=True)
-    description = serializers.CharField(read_only=True)
-    working_hours = serializers.CharField(read_only=True)
+    location = serializers.SerializerMethodField(read_only=True)
+    tel = serializers.SerializerMethodField(read_only=True)
+    description = serializers.SerializerMethodField(read_only=True)
+    working_hours = serializers.SerializerMethodField(read_only=True)
     type = serializers.CharField(source="user.type", read_only=True)
 
     class Meta:
         model = UserProfile
         fields = ["user", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type"]
+    
+    def get_location(self, obj):
+        return obj.location or ""
+
+    def get_tel(self, obj):
+        return obj.tel or ""
+    
+    def get_description(self, obj):
+        return obj.description or ""
+    
+    def get_working_hours(self, obj):
+        return obj.working_hours or ""
         
 
 class UserProfileListBusinessTypSerializer(serializers.ModelSerializer):
@@ -36,14 +48,26 @@ class UserProfileListBusinessTypSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source="user.last_name", read_only=True)
     type = serializers.CharField(source="user.type", read_only=True)
     file = serializers.ImageField(source="ImageField", read_only=True)
-    location = serializers.CharField(read_only=True)
-    tel = serializers.CharField(read_only=True)
-    description = serializers.CharField(read_only=True)
-    working_hours = serializers.CharField(read_only=True)
+    location = serializers.SerializerMethodField(read_only=True)
+    tel = serializers.SerializerMethodField(read_only=True)
+    description = serializers.SerializerMethodField(read_only=True)
+    working_hours = serializers.SerializerMethodField(read_only=True)
     type = serializers.CharField(source="user.type", read_only=True)
     class Meta:
         model = UserProfile 
         fields = ["user", "username", "first_name", "last_name", "file", "location", "tel", "description", "working_hours", "type"]
+
+    def get_location(self, obj):
+        return obj.location or ""
+
+    def get_tel(self, obj):
+        return obj.tel or ""
+    
+    def get_description(self, obj):
+        return obj.description or ""
+    
+    def get_working_hours(self, obj):
+        return obj.working_hours or ""
 
 class UserProfileDetailSerializer(serializers.ModelSerializer):
     """

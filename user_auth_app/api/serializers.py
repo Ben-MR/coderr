@@ -54,8 +54,7 @@ class RegistrationsSerializer(serializers.ModelSerializer):
         )
         
         account.set_password(pw)
-        account.save()
-        UserProfile.objects.create(user=account)
+        account.save()  
 
         return account
 

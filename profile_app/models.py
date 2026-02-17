@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save  
 
 
 class UserProfile(models.Model):
@@ -44,6 +46,17 @@ class UserProfile(models.Model):
         blank=True,
         null=True,
     )
+
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def create_or_update_user_profile(sender, instance, created, **kwargs):
+        """
+        Signal receiver to manage UserProfile lifecycle.
+        """
+        if created:
+            UserProfile.objects.get_or_create(user=instance)
+        
+        if hasattr(instance, 'profile'):
+            instance.profile.save()
 
 
     def __str__(self):
