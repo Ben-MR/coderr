@@ -10,27 +10,24 @@ Version: 1.0
 
 ## Features
 
-User Management: Registration and login system with distinction between
-Business and Customer.
-
-Offer Management: Create and manage services by Business users.
-
-Order System: Complete ordering process for customers.
-
-Review System: Customers can submit, edit, and delete reviews.
-
-Profiles: Automatically created and assigned user profiles for all
-participants.
+* **User Management**: Registration and login system with distinction between Business and Customer.
+* **Offer Management**: Create and manage services by Business users.
+* **Order System**: Complete ordering process for customers.
+* **Review System**: Customers can submit, edit, and delete reviews.
+* **Profiles**: Automatically created and assigned user profiles for all participants.
 
 ## Requirements
 
-Python: Version 3.x
+* **Python**: 3.13.x (Developed and tested with 3.13.7)
+* **Database**: SQLite (Default)
+* **Minimum Python Version**: 3.10+ (Required due to Django 6.0 features)
+* **Framework**: Django & Django REST Framework
 
-Framework: Django & Django REST Framework
-
-Dependencies (requirements.txt): - asgiref==3.11.0 - Django==6.0.1 -
-django-cors-headers==4.9.0 - django-filter==25.2 -
-djangorestframework==3.16.1 - sqlparse==0.5.5 - tzdata==2025.3
+### Key Dependencies
+- Django == 6.0.1
+- djangorestframework == 3.16.1
+- django-filter == 25.2
+- django-cors-headers == 4.9.0
 
 ## Installation
 
@@ -46,19 +43,19 @@ cd coderr-backend
 ### Create
 
 ``` bash
-python -m venv env
+python -m venv venv
 ```
 
 ### Activate (Linux/Mac)
 
 ``` bash
-source env/bin/activate
+source venv/bin/activate
 ```
 
 ### Activate (Windows)
 
 ``` bash
-env\Scripts\activate
+venv\Scripts\activate
 ```
 
 ## Install Dependencies
