@@ -24,7 +24,7 @@ class OfferDetailCreateSerializer(serializers.ModelSerializer):
     offer_type = serializers.ChoiceField(choices=['basic', 'standard', 'premium'], required=True)
     class Meta:
         model = OfferDetail
-        fields = ["title", "revisions", "delivery_time_in_days", "price", "features", "offer_type"]        
+        fields = ["id", "title", "revisions", "delivery_time_in_days", "price", "features", "offer_type"]        
 
 class OfferSerializer(serializers.ModelSerializer):
     """
@@ -37,7 +37,7 @@ class OfferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ["title", "image", "description", "details"]
+        fields = ["id", "title", "image", "description", "details"]
 
     def create(self, validated_data):
         user = self.context['request'].user        

@@ -2,6 +2,9 @@
 venv/
 .venv/
 
+env/
+.env/
+
 # database (optional ignorieren!)
 db.sqlite3
 db.sqlite3-journal
