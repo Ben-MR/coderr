@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from offers_app.models import OfferDetail
 from order_app.models import Order
 
 class OderSerializer(serializers.ModelSerializer):
@@ -41,6 +42,11 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
     offer_type = serializers.ReadOnlyField(source='offer_detail.offer_type')
     customer_user = serializers.PrimaryKeyRelatedField(read_only=True)
     business_user = serializers.PrimaryKeyRelatedField(read_only=True)
+    offer_detail_id = serializers.PrimaryKeyRelatedField(
+        queryset=OfferDetail.objects.all(),
+        source="offer_detail",
+        write_only=True
+    )
     class Meta:
         model = Order
         fields = [

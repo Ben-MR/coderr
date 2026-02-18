@@ -99,10 +99,10 @@ class OrderCountViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         """
-        Returns the count of all orders assigned to the business user identified by pk.
+        Returns the count of all orders with the status 'in_progress' for to the business user identified by pk.
         """
         get_object_or_404(User, id=pk, type='business')
-        order_count = Order.objects.filter(business_user_id=pk).count()        
+        order_count = Order.objects.filter(business_user_id=pk, status='in_progress').count()        
         return Response({'order_count': order_count}, status=status.HTTP_200_OK)
     
 class OrderCompletedCountViewSet(viewsets.ViewSet):

@@ -141,17 +141,29 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
     pricing tiers based on their type.
     """
     details = OfferDetailSerializer(many=True)
+
     class Meta:
         model = Offer
         fields = ["id", "title", "image", "description", "details"]
-    
-    
+
+    def validate_details(self, value):
+        if len(value) != 3:
+            raise serializers.ValidationError("400")
+        
+        required_types = {'basic', 'standard', 'premium'}
+        sent_types = {item.get('offer_type') for item in value}
+        
+        if required_types != sent_types:
+            raise serializers.ValidationError("400")
+            
+        return value
+
+    def validate(self, data):
+        if not data:
+            raise serializers.ValidationError("400")
+        return data
+
     def update(self, instance, validated_data):
-        """
-        Custom update logic to sync nested OfferDetail data.
-        Updates the main instance first, then iterates through detail 
-        data to update associated tiers matching the 'offer_type'.
-        """
         details_data = validated_data.pop('details', [])
         instance = super().update(instance, validated_data)        
         for data in details_data:
