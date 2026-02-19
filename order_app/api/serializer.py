@@ -24,7 +24,7 @@ class OderSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'business_user', 'customer_user',  'title', 'revisions', 'delivery_time_in_days',
-             'price', 'features', "offer_type", 'status', 'created_at', 'updated_at'
+             'price', 'features', "offer_type", 'status', 'created_at', 'updated_at', "offer_detail_id"
         ]
 
 class OrderUpdateSerializer(serializers.ModelSerializer):
