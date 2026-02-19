@@ -116,5 +116,5 @@ class OrderCompletedCountViewSet(viewsets.ViewSet):
         Returns the count of orders with the status 'completed' for the business user identified by pk.
         """
         get_object_or_404(User, id=pk, type='business')
-        order_count = Order.objects.filter(business_user_id=pk, status='completed').count()        
-        return Response({'order_count': order_count}, status=status.HTTP_200_OK)
+        ordcompleted_order_counter_count = Order.objects.filter(business_user_id=pk, status='completed').count()        
+        return Response({'completed_order_count': ordcompleted_order_counter_count}, status=status.HTTP_200_OK)

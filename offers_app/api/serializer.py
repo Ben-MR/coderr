@@ -11,6 +11,11 @@ class OfferDetailSerializer(serializers.ModelSerializer):
     Handles fields like title, revisions, delivery time, and price 
     for basic, standard, or premium versions of a service.
     """
+    title = serializers.CharField(required=True)
+    revisions = serializers.IntegerField(required=True)
+    delivery_time_in_days = serializers.IntegerField(required=True)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=True)
+    offer_type = serializers.ChoiceField(choices=['basic', 'standard', 'premium'], required=True)
     class Meta:
         model = OfferDetail
         fields = ["id", "title", "revisions", "delivery_time_in_days", "price", "features", "offer_type"]
@@ -147,11 +152,12 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "image", "description", "details"]
 
     def validate(self, data):
-        fields = ["title", "details"]
+        if 'details' not in data:
+             raise serializers.ValidationError({"details": "400 - details field missing"})
         
-        for field in fields:
-            if field not in data:
-                raise serializers.ValidationError({field: f"400 - {field} missing"})
+        for item in data.get('details', []):
+            if 'offer_type' not in item:
+                raise serializers.ValidationError({"offer_type": "400 - offer_type missing in detail"})
         
         return data
 

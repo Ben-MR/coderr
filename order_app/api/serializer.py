@@ -24,19 +24,8 @@ class OderSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id', 'business_user', 'customer_user',  'title', 'revisions', 'delivery_time_in_days',
-             'price', 'features', "offer_type", 'status', 'created_at', 'updated_at', 'offer_detail_id'
+             'price', 'features', "offer_type", 'status', 'created_at', 'updated_at'
         ]
-    
-    def validate_offer_detail_id(self, value):
-        initial_value = self.initial_data.get('offer_detail_id')
-        
-        if not isinstance(initial_value, int):
-            raise serializers.ValidationError("400")
-            
-        if not OfferDetail.objects.filter(id=value).exists():
-            raise serializers.ValidationError("400")
-            
-        return value
 
 class OrderUpdateSerializer(serializers.ModelSerializer):
     """
@@ -53,17 +42,31 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
     offer_type = serializers.ReadOnlyField(source='offer_detail.offer_type')
     customer_user = serializers.PrimaryKeyRelatedField(read_only=True)
     business_user = serializers.PrimaryKeyRelatedField(read_only=True)
-    offer_detail_id = serializers.PrimaryKeyRelatedField(
-        queryset=OfferDetail.objects.all(),
-        source="offer_detail",
-        write_only=True
-    )
+    offer_detail_id = serializers.IntegerField(write_only=True, required=True)
     class Meta:
         model = Order
         fields = [
             'id', 'business_user', 'customer_user',  'title', 
-            'revisions', 'delivery_time_in_days', 'price', 'features', "offer_type", 'status', 'created_at', 'updated_at'
+            'revisions', 'delivery_time_in_days', 'price', 'features', "offer_type", 'status', 'created_at', 'updated_at', 'offer_detail_id'
         ]
+
+    def validate_offer_detail_id(self, value):
+        """
+        Validates the 'offer_detail_id' field to ensure strict data integrity.
+        
+        - Checks if the raw input (initial_data) is a literal integer to prevent 
+          type-coercion errors or server crashes (500) caused by strings.
+        - Verifies the existence of the corresponding OfferDetail instance 
+          in the database.
+        - Raises a 400 ValidationError if the type is invalid or the ID does not exist.
+        """
+        initial_value = self.initial_data.get('offer_detail_id')        
+        if not isinstance(initial_value, int):
+            raise serializers.ValidationError("400")            
+        if not OfferDetail.objects.filter(id=value).exists():
+            raise serializers.ValidationError("400")
+            
+        return value
 
     def update(self, instance, validated_data):
         """
