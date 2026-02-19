@@ -42,7 +42,7 @@ class OrdersViewSet(viewsets.ModelViewSet):
         offer_detail_obj = get_object_or_404(OfferDetail, id=od_id)            
         seller = offer_detail_obj.offer.user
         if Order.objects.filter(customer_user=self.request.user, offer_detail=offer_detail_obj).exists():        
-                raise ValidationError("Du hast dieses Paket bereits bestellt.")
+                raise ValidationError("Order already exists for this offer detail and user.")
 
         serializer.save(
             customer_user=self.request.user,

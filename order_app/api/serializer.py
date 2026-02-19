@@ -27,6 +27,24 @@ class OderSerializer(serializers.ModelSerializer):
              'price', 'features', "offer_type", 'status', 'created_at', 'updated_at', "offer_detail_id"
         ]
 
+    def validate_offer_detail_id(self, value):
+        """
+        Validates that offer_detail_id is a strict integer and exists.
+        
+        - Checks the raw input type to prevent string-to-integer conversion.
+        - Verifies that the referenced OfferDetail exists in the database.
+        - Raises 400 if validation fails.
+        """
+        raw_value = self.initial_data.get('offer_detail_id')
+        
+        if not isinstance(raw_value, int):
+            raise serializers.ValidationError("only integer allowed")
+
+        if not OfferDetail.objects.filter(id=value).exists():
+            raise serializers.ValidationError("400")
+            
+        return value
+
 class OrderUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer optimized for updating an existing order's progress.
