@@ -20,7 +20,6 @@ Version: 1.0
 
 * **Python**: 3.13.x (Developed and tested with 3.13.7)
 * **Database**: SQLite (Default)
-* **Minimum Python Version**: 3.10+ (Required due to Django 6.0 features)
 * **Framework**: Django & Django REST Framework
 
 ### Key Dependencies

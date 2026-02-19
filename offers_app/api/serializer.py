@@ -141,6 +141,7 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
     pricing tiers based on their type.
     """
     details = OfferDetailSerializer(many=True)
+
     class Meta:
         model = Offer
         fields = ["id", "title", "image", "description", "details"]

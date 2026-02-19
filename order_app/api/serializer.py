@@ -53,6 +53,11 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
     offer_type = serializers.ReadOnlyField(source='offer_detail.offer_type')
     customer_user = serializers.PrimaryKeyRelatedField(read_only=True)
     business_user = serializers.PrimaryKeyRelatedField(read_only=True)
+    offer_detail_id = serializers.PrimaryKeyRelatedField(
+        queryset=OfferDetail.objects.all(),
+        source="offer_detail",
+        write_only=True
+    )
     class Meta:
         model = Order
         fields = [
