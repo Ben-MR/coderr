@@ -144,17 +144,19 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
         fields = ["id", "title", "image", "description", "details"]
-    
-    
+
+    def validate(self, data):
+        fields = ["title", "details"]
+        
+        for field in fields:
+            if field not in data:
+                raise serializers.ValidationError({field: f"400 - {field} missing"})
+        
+        return data
+
     def update(self, instance, validated_data):
-        """
-        Custom update logic to sync nested OfferDetail data.
-        Updates the main instance first, then iterates through detail 
-        data to update associated tiers matching the 'offer_type'.
-        """
         details_data = validated_data.pop('details', [])
         instance = super().update(instance, validated_data)        
         for data in details_data:
             instance.details.filter(offer_type=data.get('offer_type')).update(**data)
-
         return instance

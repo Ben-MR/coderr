@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from offers_app.models import OfferDetail
 from order_app.models import Order
 
 class OderSerializer(serializers.ModelSerializer):
@@ -17,14 +18,25 @@ class OderSerializer(serializers.ModelSerializer):
     offer_type = serializers.ReadOnlyField(source='offer_detail.offer_type')
     customer_user = serializers.PrimaryKeyRelatedField(read_only=True)
     business_user = serializers.PrimaryKeyRelatedField(read_only=True)
-    
+    offer_detail_id = serializers.IntegerField(write_only=True, required=True)
 
     class Meta:
         model = Order
         fields = [
             'id', 'business_user', 'customer_user',  'title', 'revisions', 'delivery_time_in_days',
-             'price', 'features', "offer_type", 'status', 'created_at', 'updated_at'
+             'price', 'features', "offer_type", 'status', 'created_at', 'updated_at', 'offer_detail_id'
         ]
+    
+    def validate_offer_detail_id(self, value):
+        initial_value = self.initial_data.get('offer_detail_id')
+        
+        if not isinstance(initial_value, int):
+            raise serializers.ValidationError("400")
+            
+        if not OfferDetail.objects.filter(id=value).exists():
+            raise serializers.ValidationError("400")
+            
+        return value
 
 class OrderUpdateSerializer(serializers.ModelSerializer):
     """
